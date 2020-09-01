@@ -1,0 +1,12 @@
+﻿{
+
+  "1331": {
+    "maxconnection": 10000,
+    "localIp": "127.0.0.1",
+    "localPort": 1331,
+    "protocol": "tcp",
+    "forwardIp": "127.0.0.1",
+    "forwardPort": 1234
+  }
+  
+}

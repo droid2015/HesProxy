@@ -1,0 +1,32 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProxyServer", "ProxyServer\ProxyServer.csproj", "{A76CD923-1BEE-4041-98F2-BF5B58DBD0F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HesServer", "HesServer\HesServer.csproj", "{9EF00368-D7CE-4E7A-A5CC-8EE1C5A3E2F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceClient", "DeviceClient\DeviceClient.csproj", "{4D8D81F6-06FB-49D7-B952-AF4B5012FDCE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A76CD923-1BEE-4041-98F2-BF5B58DBD0F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A76CD923-1BEE-4041-98F2-BF5B58DBD0F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A76CD923-1BEE-4041-98F2-BF5B58DBD0F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A76CD923-1BEE-4041-98F2-BF5B58DBD0F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EF00368-D7CE-4E7A-A5CC-8EE1C5A3E2F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EF00368-D7CE-4E7A-A5CC-8EE1C5A3E2F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EF00368-D7CE-4E7A-A5CC-8EE1C5A3E2F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EF00368-D7CE-4E7A-A5CC-8EE1C5A3E2F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D8D81F6-06FB-49D7-B952-AF4B5012FDCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D8D81F6-06FB-49D7-B952-AF4B5012FDCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D8D81F6-06FB-49D7-B952-AF4B5012FDCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D8D81F6-06FB-49D7-B952-AF4B5012FDCE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		outputpath = Build
+	EndGlobalSection
+EndGlobal
