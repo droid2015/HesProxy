@@ -1,0 +1,11 @@
+C:\Users\binhnt\source\repos\HesProxy\ProxyServer\bin\Debug\netcoreapp3.1\ProxyServer.exe
+C:\Users\binhnt\source\repos\HesProxy\ProxyServer\bin\Debug\netcoreapp3.1\config.json
+C:\Users\binhnt\source\repos\HesProxy\ProxyServer\bin\Debug\netcoreapp3.1\ProxyServer.deps.json
+C:\Users\binhnt\source\repos\HesProxy\ProxyServer\bin\Debug\netcoreapp3.1\ProxyServer.runtimeconfig.json
+C:\Users\binhnt\source\repos\HesProxy\ProxyServer\bin\Debug\netcoreapp3.1\ProxyServer.runtimeconfig.dev.json
+C:\Users\binhnt\source\repos\HesProxy\ProxyServer\bin\Debug\netcoreapp3.1\ProxyServer.dll
+C:\Users\binhnt\source\repos\HesProxy\ProxyServer\bin\Debug\netcoreapp3.1\ProxyServer.pdb
+C:\Users\binhnt\source\repos\HesProxy\ProxyServer\obj\Debug\netcoreapp3.1\ProxyServer.AssemblyInfoInputs.cache
+C:\Users\binhnt\source\repos\HesProxy\ProxyServer\obj\Debug\netcoreapp3.1\ProxyServer.AssemblyInfo.cs
+C:\Users\binhnt\source\repos\HesProxy\ProxyServer\obj\Debug\netcoreapp3.1\ProxyServer.dll
+C:\Users\binhnt\source\repos\HesProxy\ProxyServer\obj\Debug\netcoreapp3.1\ProxyServer.pdb

@@ -1,5 +1,9 @@
-﻿using System;
+﻿using ProxyServer.Modem;
+using ProxyServer.Server;
+using System;
+using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace ProxyServer.Client
 {
@@ -7,6 +11,7 @@ namespace ProxyServer.Client
 
     public class DeviceClient
     {
+        
         public static int dataBufferSize = 4096;
 
         public int id;
@@ -15,37 +20,67 @@ namespace ProxyServer.Client
         public DeviceClient(int _clientId)
         {
             id = _clientId;
-            tcp = new TCP(id);
-        }
+            tcp = new TCP(id,this);
+        }       
 
         public class TCP
         {
+            private DeviceClient connection;
             public TcpClient socket;
-
+            public TcpClient socketTransfer;
             private readonly int id;
             private NetworkStream stream;
+            private NetworkStream streamTransfer;
             private byte[] receiveBuffer;
-
-            public TCP(int _id)
+            private byte[] receiveTransferBuffer;          
+           
+            public TCP(int _id,DeviceClient _connnection)
             {
                 id = _id;
+                connection = _connnection;
             }
 
-            public void Connect(TcpClient _socket)
+            public void Connect(TcpClient _socket,TcpClient _socketTransfer)
             {
                 socket = _socket;
+                socketTransfer = _socketTransfer;
                 socket.ReceiveBufferSize = dataBufferSize;
                 socket.SendBufferSize = dataBufferSize;
+                _socketTransfer.ReceiveBufferSize = dataBufferSize;
+                _socketTransfer.SendBufferSize = dataBufferSize;
+
 
                 stream = socket.GetStream();
+                streamTransfer = socketTransfer.GetStream();
 
                 receiveBuffer = new byte[dataBufferSize];
+                receiveTransferBuffer = new byte[dataBufferSize];
 
                 stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
-
+                //Gởi gói tin 
+                //string doc = UtilityModem.encrypt(UtilityModem.DOCMODEM);
+                //stream.BeginWrite(Encoding.ASCII.GetBytes(doc), 0, doc.Length, SendCallback, null);
+                streamTransfer.BeginRead(receiveTransferBuffer, 0, dataBufferSize, ReceiveTransferCallback, null);
                 // TODO: send welcome packet
             }
+            private void SendCallback(IAsyncResult _result)
+            {
 
+            }
+            public void SendData(Packet _packet)
+            {
+                try
+                {
+                    if (socket != null)
+                    {
+                        stream.BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null); // Send data to appropriate client
+                    }
+                }
+                catch (Exception _ex)
+                {
+                    Console.WriteLine($"Error sending data to player {id} via TCP: {_ex}");
+                }
+            }
             private void ReceiveCallback(IAsyncResult _result)
             {
                 try
@@ -53,13 +88,15 @@ namespace ProxyServer.Client
                     int _byteLength = stream.EndRead(_result);
                     if (_byteLength <= 0)
                     {
-                        // TODO: disconnect
+                        connection.Disconnect();
                         return;
                     }
 
                     byte[] _data = new byte[_byteLength];
                     Array.Copy(receiveBuffer, _data, _byteLength);
-
+                    Console.WriteLine(string.Format("nhan tu modem {0} {1}",socket.Client.RemoteEndPoint,Encoding.ASCII.GetString(_data)));
+                    //Chuyển data sang transfer
+                    streamTransfer.BeginWrite(_data, 0, _data.Length, null, null);
                     // TODO: handle data
                     stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
                 }
@@ -69,6 +106,44 @@ namespace ProxyServer.Client
                     // TODO: disconnect
                 }
             }
+            
+            private void ReceiveTransferCallback(IAsyncResult _result)
+            {
+                try
+                {
+                    int _byteLength = streamTransfer.EndRead(_result);
+                    if (_byteLength <= 0)
+                    {
+                        // TODO: disconnect
+                        return;
+                    }
+
+                    byte[] _data = new byte[_byteLength];
+                    Array.Copy(receiveTransferBuffer, _data, _byteLength);
+                    Console.WriteLine(string.Format("nhan tu evnhes {0} {1}", socket.Client.RemoteEndPoint, Encoding.ASCII.GetString(_data)));
+                    stream.BeginWrite(_data, 0, _data.Length, null, null);
+                    // TODO: handle data
+                    streamTransfer.BeginRead(receiveTransferBuffer, 0, dataBufferSize, ReceiveTransferCallback, null);
+                }
+                catch (Exception _ex)
+                {
+                    Console.WriteLine($"Error receiving TCP transfer data: {_ex}");
+                    // TODO: disconnect
+                }
+            }
+            
+            public void Disconnect()
+            {
+                socket.Close();
+                stream = null;                
+                receiveBuffer = null;
+                socket = null;
+            }
+        }
+        private void Disconnect()
+        {
+            Console.WriteLine($"{tcp.socket.Client.RemoteEndPoint} has disconnected.");           
+            tcp.Disconnect();            
         }
     }
 }

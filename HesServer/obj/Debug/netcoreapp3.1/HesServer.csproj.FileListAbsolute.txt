@@ -1,0 +1,11 @@
+C:\Users\binhnt\source\repos\HesProxy\HesServer\bin\Debug\netcoreapp3.1\HesServer.exe
+C:\Users\binhnt\source\repos\HesProxy\HesServer\bin\Debug\netcoreapp3.1\HesServer.deps.json
+C:\Users\binhnt\source\repos\HesProxy\HesServer\bin\Debug\netcoreapp3.1\HesServer.runtimeconfig.json
+C:\Users\binhnt\source\repos\HesProxy\HesServer\bin\Debug\netcoreapp3.1\HesServer.runtimeconfig.dev.json
+C:\Users\binhnt\source\repos\HesProxy\HesServer\bin\Debug\netcoreapp3.1\HesServer.dll
+C:\Users\binhnt\source\repos\HesProxy\HesServer\bin\Debug\netcoreapp3.1\HesServer.pdb
+C:\Users\binhnt\source\repos\HesProxy\HesServer\obj\Debug\netcoreapp3.1\HesServer.AssemblyInfoInputs.cache
+C:\Users\binhnt\source\repos\HesProxy\HesServer\obj\Debug\netcoreapp3.1\HesServer.AssemblyInfo.cs
+C:\Users\binhnt\source\repos\HesProxy\HesServer\obj\Debug\netcoreapp3.1\HesServer.dll
+C:\Users\binhnt\source\repos\HesProxy\HesServer\obj\Debug\netcoreapp3.1\HesServer.pdb
+C:\Users\binhnt\source\repos\HesProxy\HesServer\obj\Debug\netcoreapp3.1\HesServer.csprojAssemblyReference.cache

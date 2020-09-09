@@ -12,19 +12,28 @@ namespace ProxyServer
 {
     public class TcpProxy: IProxy
     {
-        public static int MaxPlayers { get; private set; }
-        public static int Port { get; private set; }
-        public static Dictionary<int, DeviceClient> clients = new Dictionary<int, DeviceClient>();
-        public async Task Start(int maxconect,string remoteServerIp, ushort remoteServerPort, ushort localPort, string localIp)
+        private TcpListener tcpListener;
+        public  int MaxPlayers { get; private set; }
+        public int Port { get; private set; }
+        private int remoteServerPort;
+        private string remoteServerIp;
+        public  Dictionary<int, DeviceClient> clients = new Dictionary<int, DeviceClient>();
+        public void Start(int maxconect,string _remoteServerIp, ushort _remoteServerPort, ushort localPort, string localIp)
         {
             //var clients = new ConcurrentDictionary<IPEndPoint, TcpClient>();
             MaxPlayers = maxconect;
+            remoteServerIp = _remoteServerIp;
+            remoteServerPort = _remoteServerPort;
+            Port = localPort;
             InitializeServerData();
             IPAddress localIpAddress = string.IsNullOrEmpty(localIp) ? IPAddress.IPv6Any : IPAddress.Parse(localIp);
-            var server = new System.Net.Sockets.TcpListener(new IPEndPoint(localIpAddress, localPort));
+            tcpListener = new System.Net.Sockets.TcpListener(new IPEndPoint(localIpAddress, localPort));
             //server.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
-            server.Start();
-
+            tcpListener.Start();
+            Console.WriteLine($"TCP proxy started {localPort} -> {remoteServerIp}|{remoteServerPort}");
+            //Bắt đầu hành động nhận kết nối bất đồng bộ
+            tcpListener.BeginAcceptTcpClient(TCPConnectCallback, null);
+            /*
             Console.WriteLine($"TCP proxy started {localPort} -> {remoteServerIp}|{remoteServerPort}");
             while (true)
             {
@@ -54,12 +63,32 @@ namespace ProxyServer
                     Console.ResetColor();
                 }
 
-            }
+            }*/
         }
+        private  void TCPConnectCallback(IAsyncResult _result)
+        {
+            TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
+            tcpListener.BeginAcceptTcpClient(TCPConnectCallback, null);
+            Console.WriteLine($"Incoming connection from {_client.Client.RemoteEndPoint}...");
+
+            for (int i = 1; i <= MaxPlayers; i++)
+            {
+                if (clients[i].tcp.socket == null)
+                {
+                    TcpClient clientTransfer = new TcpClient(remoteServerIp, remoteServerPort);                        
+                    clients[i].tcp.Connect(_client,clientTransfer);                    
+                    //new HesClient(_client, new IPEndPoint(IPAddress.Parse(remoteServerIp), remoteServerPort));
+                    return;
+                }
+            }
+
+            Console.WriteLine($"{_client.Client.RemoteEndPoint} failed to connect: Server full!");
+        }
+       
         /// <summary>
         /// Khoi tao Deviceclient
         /// </summary>
-        private static void InitializeServerData()
+        private  void InitializeServerData()
         {
             for (int i = 1; i <= MaxPlayers; i++)
             {

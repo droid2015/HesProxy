@@ -1,0 +1,3 @@
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\obj\Debug\netcoreapp3.1\DeviceClient.csprojAssemblyReference.cache
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\obj\Debug\netcoreapp3.1\DeviceClient.AssemblyInfoInputs.cache
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\obj\Debug\netcoreapp3.1\DeviceClient.AssemblyInfo.cs
