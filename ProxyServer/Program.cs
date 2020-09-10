@@ -14,7 +14,7 @@ namespace ProxyServer
         private static bool isRunning = false;
         private static TcpOperation op;
         private static Dictionary<int, TcpProxy> ports;
-        static async Task Main(string[] args)
+        static void  Main(string[] args)
         {
             try
             {

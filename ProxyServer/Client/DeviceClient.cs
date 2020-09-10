@@ -8,6 +8,8 @@ using System.Text;
 namespace ProxyServer.Client
 {
     //doc https://github.com/tom-weiland/tcp-udp-networking
+    //doc http://jamesslocum.com/post/67566023889
+    //https://stackoverflow.com/questions/51077233/using-socket-in-flutter-apps
 
     public class DeviceClient
     {
@@ -43,25 +45,31 @@ namespace ProxyServer.Client
             public void Connect(TcpClient _socket,TcpClient _socketTransfer)
             {
                 socket = _socket;
-                socketTransfer = _socketTransfer;
+                
                 socket.ReceiveBufferSize = dataBufferSize;
                 socket.SendBufferSize = dataBufferSize;
-                _socketTransfer.ReceiveBufferSize = dataBufferSize;
-                _socketTransfer.SendBufferSize = dataBufferSize;
-
-
+        
                 stream = socket.GetStream();
-                streamTransfer = socketTransfer.GetStream();
-
                 receiveBuffer = new byte[dataBufferSize];
                 receiveTransferBuffer = new byte[dataBufferSize];
-
                 stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
-                //Gởi gói tin 
-                //string doc = UtilityModem.encrypt(UtilityModem.DOCMODEM);
-                //stream.BeginWrite(Encoding.ASCII.GetBytes(doc), 0, doc.Length, SendCallback, null);
-                streamTransfer.BeginRead(receiveTransferBuffer, 0, dataBufferSize, ReceiveTransferCallback, null);
-                // TODO: send welcome packet
+                if (_socketTransfer != null)
+                {
+                    socketTransfer = _socketTransfer;
+                    streamTransfer = socketTransfer.GetStream();
+                    _socketTransfer.ReceiveBufferSize = dataBufferSize;
+                    _socketTransfer.SendBufferSize = dataBufferSize;
+                    //Gởi gói tin 
+                    //string doc = UtilityModem.encrypt(UtilityModem.DOCMODEM);
+                    //stream.BeginWrite(Encoding.ASCII.GetBytes(doc), 0, doc.Length, SendCallback, null);
+                    streamTransfer.BeginRead(receiveTransferBuffer, 0, dataBufferSize, ReceiveTransferCallback, null);
+                    // TODO: send welcome packet
+                }
+
+
+
+
+
             }
             private void SendCallback(IAsyncResult _result)
             {
@@ -96,6 +104,7 @@ namespace ProxyServer.Client
                     Array.Copy(receiveBuffer, _data, _byteLength);
                     Console.WriteLine(string.Format("nhan tu modem {0} {1}",socket.Client.RemoteEndPoint,Encoding.ASCII.GetString(_data)));
                     //Chuyển data sang transfer
+                    if(streamTransfer!=null)
                     streamTransfer.BeginWrite(_data, 0, _data.Length, null, null);
                     // TODO: handle data
                     stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
@@ -106,7 +115,9 @@ namespace ProxyServer.Client
                     // TODO: disconnect
                 }
             }
-            
+
+           
+
             private void ReceiveTransferCallback(IAsyncResult _result)
             {
                 try

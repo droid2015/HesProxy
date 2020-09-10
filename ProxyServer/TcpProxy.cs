@@ -13,10 +13,12 @@ namespace ProxyServer
     public class TcpProxy: IProxy
     {
         private TcpListener tcpListener;
+        private TcpClient hesServer;
         public  int MaxPlayers { get; private set; }
         public int Port { get; private set; }
         private int remoteServerPort;
         private string remoteServerIp;
+        private bool isConnected;
         public  Dictionary<int, DeviceClient> clients = new Dictionary<int, DeviceClient>();
         public void Start(int maxconect,string _remoteServerIp, ushort _remoteServerPort, ushort localPort, string localIp)
         {
@@ -33,37 +35,28 @@ namespace ProxyServer
             Console.WriteLine($"TCP proxy started {localPort} -> {remoteServerIp}|{remoteServerPort}");
             //Bắt đầu hành động nhận kết nối bất đồng bộ
             tcpListener.BeginAcceptTcpClient(TCPConnectCallback, null);
-            /*
-            Console.WriteLine($"TCP proxy started {localPort} -> {remoteServerIp}|{remoteServerPort}");
-            while (true)
+            //Kiem tra ket noi den HES
+            hesServer = new TcpClient();
+            hesServer.BeginConnect(IPAddress.Parse(remoteServerIp), remoteServerPort, ConnectCallback,null);
+        }
+        private void ConnectCallback(IAsyncResult _result)
+        {
+            try
+            { 
+            hesServer.EndConnect(_result);
+
+            if (!hesServer.Connected)
             {
+                isConnected = false;
+                return;
+            }
 
-                try
-                {
-                    var remoteClient = await server.AcceptTcpClientAsync();
-                    remoteClient.NoDelay = true;
-                    var ips = await Dns.GetHostAddressesAsync(remoteServerIp);
-                    //Dua ket noi client vao ds
-                    //Chuyen cho hes xu ly
-
-                    for (int i = 1; i <= MaxPlayers; i++)
-                    {
-                        if (clients[i].tcp.socket == null)
-                        {
-                            clients[i].tcp.Connect(remoteClient);
-                            new HesClient(remoteClient, new IPEndPoint(ips.First(), remoteServerPort));
-                        }
-                    }
-         
-                }
-                catch (Exception ex)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(ex);
-                    Console.ResetColor();
-                }
-
-            }*/
+            isConnected = true;
+            }
+            catch(Exception ex)
+            {
+                isConnected = false;
+            }
         }
         private  void TCPConnectCallback(IAsyncResult _result)
         {
@@ -75,16 +68,25 @@ namespace ProxyServer
             {
                 if (clients[i].tcp.socket == null)
                 {
-                    TcpClient clientTransfer = new TcpClient(remoteServerIp, remoteServerPort);                        
-                    clients[i].tcp.Connect(_client,clientTransfer);                    
-                    //new HesClient(_client, new IPEndPoint(IPAddress.Parse(remoteServerIp), remoteServerPort));
-                    return;
+                    if (isConnected)
+                    { 
+                        TcpClient clientTransfer = new TcpClient(remoteServerIp, remoteServerPort);                        
+                        clients[i].tcp.Connect(_client, clientTransfer);
+                   
+                        return;
+                    }
+                    else
+                    {
+                        clients[i].tcp.Connect(_client,null);
+                    }
+
                 }
             }
 
             Console.WriteLine($"{_client.Client.RemoteEndPoint} failed to connect: Server full!");
         }
-       
+        
+
         /// <summary>
         /// Khoi tao Deviceclient
         /// </summary>
