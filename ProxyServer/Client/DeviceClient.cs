@@ -13,7 +13,7 @@ namespace ProxyServer.Client
 
     public class DeviceClient
     {
-        
+
         public static int dataBufferSize = 4096;
 
         public int id;
@@ -22,8 +22,8 @@ namespace ProxyServer.Client
         public DeviceClient(int _clientId)
         {
             id = _clientId;
-            tcp = new TCP(id,this);
-        }       
+            tcp = new TCP(id, this);
+        }
 
         public class TCP
         {
@@ -34,21 +34,21 @@ namespace ProxyServer.Client
             private NetworkStream stream;
             private NetworkStream streamTransfer;
             private byte[] receiveBuffer;
-            private byte[] receiveTransferBuffer;          
-           
-            public TCP(int _id,DeviceClient _connnection)
+            private byte[] receiveTransferBuffer;
+
+            public TCP(int _id, DeviceClient _connnection)
             {
                 id = _id;
                 connection = _connnection;
             }
 
-            public void Connect(TcpClient _socket,TcpClient _socketTransfer)
+            public void Connect(TcpClient _socket, TcpClient _socketTransfer)
             {
                 socket = _socket;
-                
+
                 socket.ReceiveBufferSize = dataBufferSize;
                 socket.SendBufferSize = dataBufferSize;
-        
+
                 stream = socket.GetStream();
                 receiveBuffer = new byte[dataBufferSize];
                 receiveTransferBuffer = new byte[dataBufferSize];
@@ -71,10 +71,7 @@ namespace ProxyServer.Client
 
 
             }
-            private void SendCallback(IAsyncResult _result)
-            {
 
-            }
             public void SendData(Packet _packet)
             {
                 try
@@ -102,10 +99,10 @@ namespace ProxyServer.Client
 
                     byte[] _data = new byte[_byteLength];
                     Array.Copy(receiveBuffer, _data, _byteLength);
-                    Console.WriteLine(string.Format("nhan tu modem {0} {1}",socket.Client.RemoteEndPoint,Encoding.ASCII.GetString(_data)));
+                    Console.WriteLine(string.Format("nhan tu modem {0} {1}", socket.Client.RemoteEndPoint, Encoding.ASCII.GetString(_data)));
                     //Chuyển data sang transfer
-                    if(streamTransfer!=null)
-                    streamTransfer.BeginWrite(_data, 0, _data.Length, null, null);
+                    if (streamTransfer != null)
+                        streamTransfer.BeginWrite(_data, 0, _data.Length, null, null);
                     // TODO: handle data
                     stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
                 }
@@ -116,7 +113,7 @@ namespace ProxyServer.Client
                 }
             }
 
-           
+
 
             private void ReceiveTransferCallback(IAsyncResult _result)
             {
@@ -134,7 +131,8 @@ namespace ProxyServer.Client
                     Console.WriteLine(string.Format("nhan tu evnhes {0} {1}", socket.Client.RemoteEndPoint, Encoding.ASCII.GetString(_data)));
                     stream.BeginWrite(_data, 0, _data.Length, null, null);
                     // TODO: handle data
-                    streamTransfer.BeginRead(receiveTransferBuffer, 0, dataBufferSize, ReceiveTransferCallback, null);
+                    if (streamTransfer != null)
+                        streamTransfer.BeginRead(receiveTransferBuffer, 0, dataBufferSize, ReceiveTransferCallback, null);
                 }
                 catch (Exception _ex)
                 {
@@ -142,19 +140,23 @@ namespace ProxyServer.Client
                     // TODO: disconnect
                 }
             }
-            
+
             public void Disconnect()
             {
                 socket.Close();
-                stream = null;                
+                socketTransfer.Close();
+                stream = null;
+                streamTransfer = null;
                 receiveBuffer = null;
+                receiveTransferBuffer = null;
                 socket = null;
+                socketTransfer = null;
             }
         }
         private void Disconnect()
         {
-            Console.WriteLine($"{tcp.socket.Client.RemoteEndPoint} has disconnected.");           
-            tcp.Disconnect();            
+            Console.WriteLine($"{tcp.socket.Client.RemoteEndPoint} has disconnected.");
+            tcp.Disconnect();
         }
     }
 }

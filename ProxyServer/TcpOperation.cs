@@ -1,4 +1,5 @@
 ﻿using ProxyServer.Client;
+using ProxyServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -13,7 +14,10 @@ namespace ProxyServer
         public int Port { get; private set; }
         public string Ip { get; private set; }
         public int MaxConn { get; private set; }
-        public Dictionary<int, OpClient> clients = new Dictionary<int, OpClient>();
+        public static Dictionary<int, OpClient> clients = new Dictionary<int, OpClient>();
+
+        public delegate void PacketHandler(int _fromClient, Packet _packet);
+        public static Dictionary<int, PacketHandler> packetHandlers;
         public void Start(int maxconect, int localPort, string localIp)
         {
             
@@ -34,6 +38,36 @@ namespace ProxyServer
             {
                 clients.Add(i, new OpClient(i));
             }
+            //Khoi tạo
+            packetHandlers = new Dictionary<int, PacketHandler>()
+            {
+                { (int)ClientPackets.welcomeReceived, WelcomeReceived },
+                { (int)ClientPackets.playerMovement, PlayerMovement },
+            };
+        }
+        public  void WelcomeReceived(int _fromClient, Packet _packet)
+        {
+            int _clientIdCheck = _packet.ReadInt();
+            string _username = _packet.ReadString();
+
+            Console.WriteLine($"{clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient}.");
+            if (_fromClient != _clientIdCheck)
+            {
+                Console.WriteLine($"Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
+            }
+            clients[_fromClient].SendIntoGame(_username);
+        }
+
+        public  void PlayerMovement(int _fromClient, Packet _packet)
+        {
+            bool[] _inputs = new bool[_packet.ReadInt()];
+            for (int i = 0; i < _inputs.Length; i++)
+            {
+                _inputs[i] = _packet.ReadBool();
+            }
+            Quaternion _rotation = _packet.ReadQuaternion();
+
+            Server.clients[_fromClient].player.SetInput(_inputs, _rotation);
         }
         private void TCPConnectCallback(IAsyncResult _result)
         {
