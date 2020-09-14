@@ -5,10 +5,10 @@ namespace ProxyServer.Client
     {
         public int id;
         public string username;
-        public decimal lat;
-        public decimal lon;
+        public float lat;
+        public float lon;
 
-        public NguoiVanHanh(int _id, string _username,decimal _lat,decimal _lon)
+        public NguoiVanHanh(int _id, string _username,float _lat,float _lon)
         {
             id = _id;
             username = _username;
@@ -19,11 +19,16 @@ namespace ProxyServer.Client
         {
             
         }
-        private void Move(decimal _lat,decimal _lon)
+        private void Move(float _lat,float _lon)
         {
           
             //ServerSend.PlayerPosition(this);
             //ServerSend.PlayerRotation(this);
+        }
+        public void SetInput(float _lat,float _lon)
+        {
+            lat = _lat;
+            lon = _lon;
         }
     }
 }

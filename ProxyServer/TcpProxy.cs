@@ -89,6 +89,7 @@ namespace ProxyServer
                     else
                     {
                         clients[i].tcp.Connect(_client, null);
+                        return;
                     }
 
                 }

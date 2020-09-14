@@ -144,6 +144,7 @@ namespace ProxyServer.Client
             public void Disconnect()
             {
                 socket.Close();
+                if(socketTransfer!=null)
                 socketTransfer.Close();
                 stream = null;
                 streamTransfer = null;

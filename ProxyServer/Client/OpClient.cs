@@ -34,17 +34,17 @@ namespace ProxyServer.Client
                 {
                     if (_client.id != id)
                     {
-                        ServerSend.SpawnPlayer(id, _client.user);
+                        ServerSend.SpawnPlayer(id,user);
                     }
                 }
             }
 
             // Send the new player to all players (including himself)
-            foreach (OpClient _client in Server.clients.Values)
+            foreach (OpClient _client in TcpOperation.clients.Values)
             {
-                if (_client.player != null)
+                if (_client.user != null)
                 {
-                    ServerSend.SpawnPlayer(_client.id, player);
+                    //ServerSend.SpawnPlayer(_client.id, player);
                 }
             }
         }
@@ -68,11 +68,15 @@ namespace ProxyServer.Client
                 socket = _socket;                
                 socket.ReceiveBufferSize = dataBufferSize;
                 socket.SendBufferSize = dataBufferSize;                
-                stream = socket.GetStream();                
+                stream = socket.GetStream();
+                //Khai báo package để giao tiếp client
+                receivedData = new Packet();
 
                 receiveBuffer = new byte[dataBufferSize];
                 receiveTransferBuffer = new byte[dataBufferSize];
-                stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);               
+                stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
+                //Gởi gói tin
+                ServerSend.Welcome(id, "Welcome to the server!");
             }
             
             private void ReceiveCallback(IAsyncResult _result)
@@ -87,8 +91,9 @@ namespace ProxyServer.Client
                     }
 
                     byte[] _data = new byte[_byteLength];
-                    Array.Copy(receiveBuffer, _data, _byteLength);                   
-                    //Chuyển data sang transfer                   
+                    Array.Copy(receiveBuffer, _data, _byteLength);
+                    //Xử lý data
+                    receivedData.Reset(HandleData(_data));
                     // TODO: handle data
                     stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
                 }
@@ -96,6 +101,21 @@ namespace ProxyServer.Client
                 {
                     Console.WriteLine($"Error receiving TCP data: {_ex}");
                     // TODO: disconnect
+                }
+            }
+            public void SendData(Packet _packet)
+            {
+                try
+                {
+                    if (socket != null)
+                    {
+                        Console.WriteLine(@"send client "+Encoding.ASCII.GetString(_packet.ToArray()));
+                        stream.BeginWrite(_packet.ToArray(), 0, _packet.Length(), null, null); // Send data to appropriate client
+                    }
+                }
+                catch (Exception _ex)
+                {
+                    Console.WriteLine($"Error sending data to player {id} via TCP: {_ex}");
                 }
             }
             private bool HandleData(byte[] _data)
@@ -124,7 +144,7 @@ namespace ProxyServer.Client
                         using (Packet _packet = new Packet(_packetBytes))
                         {
                             int _packetId = _packet.ReadInt();
-                            Server.packetHandlers[_packetId](id, _packet); // Call appropriate method to handle the packet
+                            TcpOperation.packetHandlers[_packetId](id, _packet); // Call appropriate method to handle the packet
                         }
                     });
 

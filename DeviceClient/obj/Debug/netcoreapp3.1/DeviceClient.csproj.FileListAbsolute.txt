@@ -1,3 +1,11 @@
-C:\Users\binhnt\source\repos\HesProxy\DeviceClient\obj\Debug\netcoreapp3.1\DeviceClient.csprojAssemblyReference.cache
 C:\Users\binhnt\source\repos\HesProxy\DeviceClient\obj\Debug\netcoreapp3.1\DeviceClient.AssemblyInfoInputs.cache
 C:\Users\binhnt\source\repos\HesProxy\DeviceClient\obj\Debug\netcoreapp3.1\DeviceClient.AssemblyInfo.cs
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\bin\Debug\netcoreapp3.1\DeviceClient.exe
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\bin\Debug\netcoreapp3.1\DeviceClient.deps.json
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\bin\Debug\netcoreapp3.1\DeviceClient.runtimeconfig.json
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\bin\Debug\netcoreapp3.1\DeviceClient.runtimeconfig.dev.json
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\bin\Debug\netcoreapp3.1\DeviceClient.dll
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\bin\Debug\netcoreapp3.1\DeviceClient.pdb
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\obj\Debug\netcoreapp3.1\DeviceClient.dll
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\obj\Debug\netcoreapp3.1\DeviceClient.pdb
+C:\Users\binhnt\source\repos\HesProxy\DeviceClient\obj\Debug\netcoreapp3.1\DeviceClient.csprojAssemblyReference.cache

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProxyServer.Client;
+using System;
 namespace ProxyServer.Server
 {
     class ServerSend
@@ -9,6 +10,7 @@ namespace ProxyServer.Server
         private static void SendTCPData(int _toClient, Packet _packet)
         {
             _packet.WriteLength();
+            //package dinh dang lai chieudai idpackage noidung clientid
             TcpOperation.clients[_toClient].tcp.SendData(_packet);
         }
 
@@ -17,7 +19,7 @@ namespace ProxyServer.Server
         private static void SendTCPDataToAll(Packet _packet)
         {
             _packet.WriteLength();
-            for (int i = 1; i <= Server.MaxPlayers; i++)
+            for (int i = 1; i <= TcpOperation.MaxConn; i++)
             {
                 TcpOperation.clients[i].tcp.SendData(_packet);
             }
@@ -28,26 +30,14 @@ namespace ProxyServer.Server
         private static void SendTCPDataToAll(int _exceptClient, Packet _packet)
         {
             _packet.WriteLength();
-            for (int i = 1; i <= Server.MaxPlayers; i++)
+            for (int i = 1; i <= TcpOperation.MaxConn; i++)
             {
                 if (i != _exceptClient)
                 {
                     TcpOperation.clients[i].tcp.SendData(_packet);
                 }
             }
-        }
-
-        /// <summary>Sends a packet to all clients via UDP.</summary>
-        /// <param name="_packet">The packet to send.</param>
-        private static void SendUDPDataToAll(Packet _packet)
-        {
-            _packet.WriteLength();
-            for (int i = 1; i <= Server.MaxPlayers; i++)
-            {
-                Server.clients[i].udp.SendData(_packet);
-            }
-        }
-       
+        }       
 
         #region Packets
         /// <summary>Sends a welcome message to the given client.</summary>
@@ -57,6 +47,7 @@ namespace ProxyServer.Server
         {
             using (Packet _packet = new Packet((int)ServerPackets.welcome))
             {
+                //package có định dạng idpackage noidung idclient
                 _packet.Write(_msg);
                 _packet.Write(_toClient);
 
@@ -67,14 +58,14 @@ namespace ProxyServer.Server
         /// <summary>Tells a client to spawn a player.</summary>
         /// <param name="_toClient">The client that should spawn the player.</param>
         /// <param name="_player">The player to spawn.</param>
-        public static void SpawnPlayer(int _toClient, Player _player)
+        public static void SpawnPlayer(int _toClient, NguoiVanHanh _user)
         {
-            using (Packet _packet = new Packet((int)ServerPackets.spawnPlayer))
+            using (Packet _packet = new Packet((int)ServerPackets.docModem))
             {
-                _packet.Write(_player.id);
-                _packet.Write(_player.username);
-                _packet.Write(_player.position);
-                _packet.Write(_player.rotation);
+                _packet.Write(_user.id);
+                _packet.Write(_user.username);
+                _packet.Write(_user.lat);
+                _packet.Write(_user.lon);
 
                 SendTCPData(_toClient, _packet);
             }

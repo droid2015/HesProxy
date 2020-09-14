@@ -13,7 +13,7 @@ namespace ProxyServer
         private TcpListener tcpListener;
         public int Port { get; private set; }
         public string Ip { get; private set; }
-        public int MaxConn { get; private set; }
+        public static int MaxConn { get; private set; }
         public static Dictionary<int, OpClient> clients = new Dictionary<int, OpClient>();
 
         public delegate void PacketHandler(int _fromClient, Packet _packet);
@@ -42,7 +42,7 @@ namespace ProxyServer
             packetHandlers = new Dictionary<int, PacketHandler>()
             {
                 { (int)ClientPackets.welcomeReceived, WelcomeReceived },
-                { (int)ClientPackets.playerMovement, PlayerMovement },
+                { (int)ClientPackets.docModem, DocModem },
             };
         }
         public  void WelcomeReceived(int _fromClient, Packet _packet)
@@ -55,19 +55,19 @@ namespace ProxyServer
             {
                 Console.WriteLine($"Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
             }
-            clients[_fromClient].SendIntoGame(_username);
+            clients[_fromClient].SendIntoVanHanh(_username);
         }
 
-        public  void PlayerMovement(int _fromClient, Packet _packet)
+        public  void DocModem(int _fromClient, Packet _packet)
         {
-            bool[] _inputs = new bool[_packet.ReadInt()];
-            for (int i = 0; i < _inputs.Length; i++)
-            {
-                _inputs[i] = _packet.ReadBool();
-            }
-            Quaternion _rotation = _packet.ReadQuaternion();
+            //bool[] _inputs = new bool[_packet.ReadInt()];
+            //for (int i = 0; i < _inputs.Length; i++)
+            //{
+            //    _inputs[i] = _packet.ReadBool();
+            //}
+            //Quaternion _rotation = _packet.ReadQuaternion();
 
-            Server.clients[_fromClient].player.SetInput(_inputs, _rotation);
+            //clients[_fromClient].user.SetInput(_inputs, _rotation);
         }
         private void TCPConnectCallback(IAsyncResult _result)
         {
@@ -83,7 +83,6 @@ namespace ProxyServer
                     return;
                 }
             }
-
             Console.WriteLine($"{_client.Client.RemoteEndPoint} failed to connect: Server full!");
         }
     }

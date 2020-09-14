@@ -175,6 +175,7 @@ namespace DeviceClient.Simulator
             Write(_value.Length); // Add the length of the string to the packet
             buffer.AddRange(Encoding.ASCII.GetBytes(_value)); // Add the string itself
         }
+        #endregion 
 
         #region Read Data
         /// <summary>Reads a byte from the packet.</summary>
@@ -345,7 +346,7 @@ namespace DeviceClient.Simulator
                 throw new Exception("Could not read value of type 'string'!");
             }
         }
-
+        #endregion
 
 
         private bool disposed = false;

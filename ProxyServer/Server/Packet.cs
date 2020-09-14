@@ -9,16 +9,18 @@ namespace ProxyServer.Server
     public enum ServerPackets
     {
         welcome = 1,
-        spawnPlayer,
-        playerPosition,
-        playerRotation
+        docModem,
+        ghiModem,
+        kichDoc
     }
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
     {
         welcomeReceived = 1,
-        playerMovement
+        docModem,
+        ghiModem,
+        kichDoc
     }
 
     public class Packet : IDisposable
@@ -38,8 +40,6 @@ namespace ProxyServer.Server
         /// <param name="_id">The packet ID.</param>
         public Packet(int _id) : this()
         {
-
-
             Write(_id); // Write packet id to the buffer
         }
 
