@@ -8,8 +8,8 @@ namespace DeviceClient.Simulator
     public enum ServerPackets
     {
         welcome = 1,
-        spawnPlayer,
-        playerPosition,
+        CONNECT3,
+        ReadReceive,
         playerRotation,
         playerDisconnected,
         playerHealth,
@@ -29,8 +29,8 @@ namespace DeviceClient.Simulator
     public enum ClientPackets
     {
         welcomeReceived = 1,
-        playerMovement,
-        playerShoot,
+        CONNECT3,
+        docModem,
         playerThrowItem
     }
 

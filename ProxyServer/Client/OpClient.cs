@@ -23,7 +23,7 @@ namespace ProxyServer.Client
             Console.WriteLine($"{tcp.socket.Client.RemoteEndPoint} has disconnected.");
             tcp.Disconnect();
         }
-        public void SendIntoVanHanh(string _userName)
+        public void Connect3(string _userName)
         {
             user = new NguoiVanHanh(id, _userName, 0,0);
 
@@ -34,7 +34,7 @@ namespace ProxyServer.Client
                 {
                     if (_client.id != id)
                     {
-                        ServerSend.SpawnPlayer(id,user);
+                        ServerSend.Connect3(id,user);
                     }
                 }
             }
@@ -44,7 +44,7 @@ namespace ProxyServer.Client
             {
                 if (_client.user != null)
                 {
-                    //ServerSend.SpawnPlayer(_client.id, player);
+                    ServerSend.Connect3(id, user);
                 }
             }
         }
@@ -76,6 +76,7 @@ namespace ProxyServer.Client
                 receiveTransferBuffer = new byte[dataBufferSize];
                 stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
                 //Gởi gói tin
+                //ServerSend.Connect3(id, "CONNECT3");
                 ServerSend.Welcome(id, "Welcome to the server!");
             }
             
@@ -91,7 +92,7 @@ namespace ProxyServer.Client
                     }
 
                     byte[] _data = new byte[_byteLength];
-                    Array.Copy(receiveBuffer, _data, _byteLength);
+                    Array.Copy(receiveBuffer, _data, _byteLength);                   
                     //Xử lý data
                     receivedData.Reset(HandleData(_data));
                     // TODO: handle data
@@ -100,6 +101,7 @@ namespace ProxyServer.Client
                 catch (Exception _ex)
                 {
                     Console.WriteLine($"Error receiving TCP data: {_ex}");
+                    connection.Disconnect();
                     // TODO: disconnect
                 }
             }

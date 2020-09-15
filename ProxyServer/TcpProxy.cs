@@ -15,19 +15,29 @@ namespace ProxyServer
     {
         private TcpListener tcpListener;
         private TcpClient hesServer;
+        private TcpClient opServer;
         public int MaxPlayers { get; private set; }
         public int Port { get; private set; }
         private int remoteServerPort;
         private string remoteServerIp;
+        //Van hanh
+        private string opIp;
+        private int opPort;
+
         private bool isConnected;
-        public Dictionary<int, DeviceClient> clients = new Dictionary<int, DeviceClient>();
-        private ConcurrentDictionary<string, int> imei = new ConcurrentDictionary<string, int>();
-        public void Start(int maxconect, string _remoteServerIp, ushort _remoteServerPort, ushort localPort, string localIp)
+        public static Dictionary<int, DeviceClient> clients = new Dictionary<int, DeviceClient>();
+        public static ConcurrentDictionary<string, int> imei = new ConcurrentDictionary<string, int>();
+        //
+        public delegate void ImeiHandler(int _fromClient, string imei);
+        public static ImeiHandler handler;
+        public void Start(int maxconect, string _remoteServerIp, ushort _remoteServerPort, ushort localPort, string localIp,string _opIp,int _opPort)
         {
             MaxPlayers = maxconect;
             remoteServerIp = _remoteServerIp;
             remoteServerPort = _remoteServerPort;
             Port = localPort;
+            opIp = _opIp;
+            opPort = _opPort;
             InitializeServerData();
             IPAddress localIpAddress = string.IsNullOrEmpty(localIp) ? IPAddress.IPv6Any : IPAddress.Parse(localIp);
             tcpListener = new System.Net.Sockets.TcpListener(new IPEndPoint(localIpAddress, localPort));
@@ -39,6 +49,17 @@ namespace ProxyServer
             //Kiem tra ket noi den HES server
             hesServer = new TcpClient();
             hesServer.BeginConnect(IPAddress.Parse(remoteServerIp), remoteServerPort, ConnectCallback, null);
+            //Kết nối đến opServer
+            opServer = new TcpClient(opIp, opPort);
+            //Đăng ký handler
+            handler = new ImeiHandler(XulyImei);
+            //khoi tao
+            //imei.TryAdd("123456", 1);
+        }
+        public void XulyImei(int _fromClient, string _imei)
+        {
+            Console.WriteLine("gia tri {_imei} {_fromclient}");
+            imei.AddOrUpdate(_imei, _fromClient, ( _fromclient, oldvalue) => _fromClient);
         }
         private void ConnectCallback(IAsyncResult _result)
         {
@@ -70,7 +91,7 @@ namespace ProxyServer
             _client.NoDelay = true;
             //Bắt đầu nhận kết nối thiết bị mới
             tcpListener.BeginAcceptTcpClient(TCPConnectCallback, null);
-            Console.WriteLine($"Incoming connection from {_client.Client.RemoteEndPoint}...");
+            //Console.WriteLine($"Incoming connection from {_client.Client.RemoteEndPoint}...");
 
             for (int i = 1; i <= MaxPlayers; i++)
             {
@@ -81,14 +102,14 @@ namespace ProxyServer
                     if (isConnected)
                     {
                         TcpClient clientTransfer = new TcpClient(remoteServerIp, remoteServerPort);
-                        clients[i].tcp.Connect(_client, clientTransfer);
-
+                        clients[i].tcp.Connect(_client, clientTransfer,opServer);
+                        Console.WriteLine("id:" + i);
                         return;
                     }
                     //Hes server chưa kết nối
                     else
                     {
-                        clients[i].tcp.Connect(_client, null);
+                        clients[i].tcp.Connect(_client, null,opServer);
                         return;
                     }
 

@@ -54,6 +54,20 @@ namespace ProxyServer.Server
                 SendTCPData(_toClient, _packet);
             }
         }
+        public static void Connect3(int _toClient, NguoiVanHanh _user)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.connect3))
+            {
+                
+                _packet.Write(_user.id);
+                _packet.Write(_user.username);
+                _packet.Write(_user.lat);
+                _packet.Write(_user.lon);
+                _packet.Write("CONNECT3");
+                _packet.Write(_toClient);
+                SendTCPData(_toClient, _packet);
+            }
+        }
 
         /// <summary>Tells a client to spawn a player.</summary>
         /// <param name="_toClient">The client that should spawn the player.</param>

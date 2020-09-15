@@ -9,4 +9,3 @@ C:\Users\binhnt\source\repos\HesProxy\ProxyServer\obj\Debug\netcoreapp3.1\ProxyS
 C:\Users\binhnt\source\repos\HesProxy\ProxyServer\obj\Debug\netcoreapp3.1\ProxyServer.AssemblyInfo.cs
 C:\Users\binhnt\source\repos\HesProxy\ProxyServer\obj\Debug\netcoreapp3.1\ProxyServer.dll
 C:\Users\binhnt\source\repos\HesProxy\ProxyServer\obj\Debug\netcoreapp3.1\ProxyServer.pdb
-C:\Users\binhnt\source\repos\HesProxy\ProxyServer\obj\Debug\netcoreapp3.1\ProxyServer.csprojAssemblyReference.cache

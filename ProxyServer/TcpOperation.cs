@@ -1,4 +1,5 @@
 ﻿using ProxyServer.Client;
+using ProxyServer.Modem;
 using ProxyServer.Server;
 using System;
 using System.Collections.Generic;
@@ -42,10 +43,11 @@ namespace ProxyServer
             packetHandlers = new Dictionary<int, PacketHandler>()
             {
                 { (int)ClientPackets.welcomeReceived, WelcomeReceived },
+                { (int)ClientPackets.connect3, Connect3Received },                
                 { (int)ClientPackets.docModem, DocModem },
             };
         }
-        public  void WelcomeReceived(int _fromClient, Packet _packet)
+        public void Connect3Received(int _fromClient, Packet _packet)
         {
             int _clientIdCheck = _packet.ReadInt();
             string _username = _packet.ReadString();
@@ -55,19 +57,42 @@ namespace ProxyServer
             {
                 Console.WriteLine($"Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
             }
-            clients[_fromClient].SendIntoVanHanh(_username);
+            //clients[_fromClient].SendIntoVanHanh(_username);
+        }
+        public  void WelcomeReceived(int _fromClient, Packet _packet)
+        {
+            
+            int _clientIdCheck = _packet.ReadInt();
+            string _username = _packet.ReadString();
+
+            Console.WriteLine($"{clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient}.");
+            if (_fromClient != _clientIdCheck)
+            {
+                Console.WriteLine($"Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
+            }
+            clients[_fromClient].Connect3(_username);
         }
 
         public  void DocModem(int _fromClient, Packet _packet)
         {
-            //bool[] _inputs = new bool[_packet.ReadInt()];
-            //for (int i = 0; i < _inputs.Length; i++)
-            //{
-            //    _inputs[i] = _packet.ReadBool();
-            //}
-            //Quaternion _rotation = _packet.ReadQuaternion();
+            int _clientIdCheck = _packet.ReadInt();
+            string _imei = _packet.ReadString();
 
-            //clients[_fromClient].user.SetInput(_inputs, _rotation);
+            Console.WriteLine($"{clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient}.");
+            if (_fromClient != _clientIdCheck)
+            {
+                Console.WriteLine($"Imei \"{_imei}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
+            }
+            //Kiem tra doc trong thread;
+            ThreadManager.ExecuteOnMainThread(() =>
+            {
+                int modemid = TcpProxy.imei[_imei];
+                //
+                string docmodem = UtilityModem.encrypt(UtilityModem.DOCMODEM);
+                TcpProxy.clients[modemid].tcp.SendData(Encoding.ASCII.GetBytes(docmodem));
+            });            
+            //
+            
         }
         private void TCPConnectCallback(IAsyncResult _result)
         {

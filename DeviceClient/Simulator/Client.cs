@@ -143,16 +143,22 @@ namespace DeviceClient.Simulator
                     // While packet contains data AND packet data length doesn't exceed the length of the packet we're reading
                     byte[] _packetBytes = receivedData.ReadBytes(_packetLength);
                     Console.WriteLine(Encoding.ASCII.GetString(_packetBytes));
+                    /*using (Packet _packet = new Packet(_packetBytes))
+                    {
+                        int _packetId = _packet.ReadInt();
+                        Console.WriteLine(_packetId);
+                        packetHandlers[_packetId](_packet); // Call appropriate method to handle the packet
+                    }*/
+                   
                     ThreadManager.ExecuteOnMainThread(() =>
                     {
                         using (Packet _packet = new Packet(_packetBytes))
                         {
-                            int _packetId = _packet.ReadInt();
-                            Console.WriteLine(_packetId);
+                            int _packetId = _packet.ReadInt();                            
                             packetHandlers[_packetId](_packet); // Call appropriate method to handle the packet
                         }
                     });
-
+                    
                     _packetLength = 0; // Reset packet length
                     if (receivedData.UnreadLength() >= 4)
                     {
@@ -185,18 +191,39 @@ namespace DeviceClient.Simulator
                 socket = null;
             }
         }
-        public static void Welcome(Packet _packet)
+        public void Welcome(Packet _packet)
         {
+            //Xu ly nhan tu serer
             string _msg = _packet.ReadString();
-            int _myId = _packet.ReadInt();
-
+            myId = _packet.ReadInt();
+            //Goi server
+            WelcomeReceived();
             Console.WriteLine($"Message from server: {_msg}");
 
         }
-
-        public static void SpawnPlayer(Packet _packet)
+        public void ReadReceive(Packet _packet)
         {
-           
+            //Xu ly nhan tu serer
+            string _msg = _packet.ReadString();
+            myId = _packet.ReadInt();
+            //Goi server
+            WelcomeReceived();
+            Console.WriteLine($"Message from server: {_msg}");
+
+        }
+        public void Connect3(Packet _packet)
+        {
+            _packet.ReadInt();//id
+            _packet.ReadString();//username
+            _packet.ReadFloat();//lat
+            _packet.ReadFloat();//lon
+            //_packet.ReadInt();
+            string _msg = _packet.ReadString();//content
+            
+            if(_msg.Contains("CONNECT3"))
+            {
+                SendImei("123456");
+            }
         }
 
         public static void PlayerPosition(Packet _packet)
@@ -285,8 +312,8 @@ namespace DeviceClient.Simulator
             packetHandlers = new Dictionary<int, PacketHandler>()
         {
             { (int)ServerPackets.welcome, Welcome },
-            { (int)ServerPackets.spawnPlayer, SpawnPlayer },
-            { (int)ServerPackets.playerPosition, PlayerPosition },
+            { (int)ServerPackets.CONNECT3, Connect3 },
+            { (int)ServerPackets.ReadReceive, ReadReceive },
             { (int)ServerPackets.playerRotation, PlayerRotation },
             { (int)ServerPackets.playerDisconnected, PlayerDisconnected },
             { (int)ServerPackets.playerHealth, PlayerHealth },
@@ -315,6 +342,29 @@ namespace DeviceClient.Simulator
                 Console.WriteLine("Disconnected from server.");
             }
         }
+        #region PhanReceive
+        public void WelcomeReceived()
+        {
+            using (Packet _packet = new Packet((int)ClientPackets.welcomeReceived))
+            {                
+                _packet.Write(myId);
+                _packet.Write("binhnt");
+                _packet.WriteLength();                
+
+                tcp.SendData(_packet);
+            }
+        }        
+        public void SendImei(string imei)
+        {
+            using (Packet _packet = new Packet((int)ClientPackets.docModem))
+            {
+                _packet.Write(myId);
+                _packet.Write(imei);
+                _packet.WriteLength();
+                tcp.SendData(_packet);
+            }
+        }
+        #endregion
     }
 
 }

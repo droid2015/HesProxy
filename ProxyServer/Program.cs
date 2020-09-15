@@ -31,7 +31,7 @@ namespace ProxyServer
                 foreach (ProxyConfig item in configs.ports)
                 {
                     var proxy = new TcpProxy();
-                    proxy.Start(item.maxconnection, item.forwardIp, item.forwardPort, item.localPort, item.localIp);
+                    proxy.Start(item.maxconnection, item.forwardIp, item.forwardPort, item.localPort, item.localIp,configs.opip,configs.opport);
                     ports.Add(item.localPort, proxy);
                 }
             }
@@ -51,7 +51,7 @@ namespace ProxyServer
                 {
                     // If the time for the next loop is in the past,
                     // aka it's time to execute another tick
-                    //GameLogic.Update(); // Execute game logic
+                    ThreadManager.UpdateMain(); // Execute game logic
                     // Calculate at what point in time the next tick should be executed
                     _nextLoop = _nextLoop.AddMilliseconds(Constants.MS_PER_TICK);
 

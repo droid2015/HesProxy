@@ -9,6 +9,7 @@ namespace ProxyServer.Server
     public enum ServerPackets
     {
         welcome = 1,
+        connect3,
         docModem,
         ghiModem,
         kichDoc
@@ -18,6 +19,7 @@ namespace ProxyServer.Server
     public enum ClientPackets
     {
         welcomeReceived = 1,
+        connect3,
         docModem,
         ghiModem,
         kichDoc
