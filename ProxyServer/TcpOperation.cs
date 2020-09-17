@@ -11,6 +11,7 @@ namespace ProxyServer
 {
     public class TcpOperation
     {
+
         private TcpListener tcpListener;
         public int Port { get; private set; }
         public string Ip { get; private set; }
@@ -19,6 +20,8 @@ namespace ProxyServer
 
         public delegate void PacketHandler(int _fromClient, Packet _packet);
         public static Dictionary<int, PacketHandler> packetHandlers;
+        public Dictionary<int, TcpProxy> listPorts { set; get; }
+        private int currentPort=1388;
         public void Start(int maxconect, int localPort, string localIp)
         {
             
@@ -86,10 +89,10 @@ namespace ProxyServer
             //Kiem tra doc trong thread;
             ThreadManager.ExecuteOnMainThread(() =>
             {
-                int modemid = TcpProxy.imei[_imei];
+                int modemid = listPorts[currentPort].imei[_imei];
                 //
                 string docmodem = UtilityModem.encrypt(UtilityModem.DOCMODEM);
-                TcpProxy.clients[modemid].tcp.SendData(Encoding.ASCII.GetBytes(docmodem));
+                listPorts[currentPort].clients[modemid].tcp.SendData(Encoding.ASCII.GetBytes(docmodem));
             });            
             //
             

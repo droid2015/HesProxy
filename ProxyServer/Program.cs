@@ -24,16 +24,17 @@ namespace ProxyServer
                 Thread mainThread = new Thread(new ThreadStart(MainThread));
                 mainThread.Start();
                 //Start server cho van hanh
-                op = new TcpOperation();
-                op.Start(configs.opmax, configs.opport, configs.opip);
+                //op = new TcpOperation();
+                //op.Start(configs.opmax, configs.opport, configs.opip);
                 //Start server cho xu ly modem va hes
                 ports = new Dictionary<int, TcpProxy>();
                 foreach (ProxyConfig item in configs.ports)
                 {
                     var proxy = new TcpProxy();
-                    proxy.Start(item.maxconnection, item.forwardIp, item.forwardPort, item.localPort, item.localIp,configs.opip,configs.opport);
+                    proxy.Start(item.maxconnection, item.forwardIp, item.forwardPort, item.localPort, item.localIp);
                     ports.Add(item.localPort, proxy);
                 }
+                //op.listPorts = ports;
             }
             catch(Exception ex)
             {

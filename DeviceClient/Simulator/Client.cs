@@ -12,8 +12,8 @@ namespace DeviceClient.Simulator
     {       
         public static int dataBufferSize = 4096;
 
-        public string ip = "127.0.0.1";
-        public int port = 9192;
+        public string ip = "10.170.69.24";
+        public int port = 1388;
         public int myId = 0;
         public TCP tcp;  
 
@@ -109,7 +109,7 @@ namespace DeviceClient.Simulator
 
                     byte[] _data = new byte[_byteLength];
                     Array.Copy(receiveBuffer, _data, _byteLength);
-
+                    Console.WriteLine("data " + Encoding.ASCII.GetString(_data));
                     receivedData.Reset(HandleData(_data)); // Reset receivedData if all data was handled
                     stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
                 }
@@ -191,6 +191,10 @@ namespace DeviceClient.Simulator
                 socket = null;
             }
         }
+        /// <summary>
+        /// Package nhận là welcome
+        /// </summary>
+        /// <param name="_packet"></param>
         public void Welcome(Packet _packet)
         {
             //Xu ly nhan tu serer
@@ -198,7 +202,7 @@ namespace DeviceClient.Simulator
             myId = _packet.ReadInt();
             //Goi server
             WelcomeReceived();
-            Console.WriteLine($"Message from server: {_msg}");
+            Console.WriteLine($"Message from server: {_msg} id {myId}");
 
         }
         public void ReadReceive(Packet _packet)
@@ -222,7 +226,7 @@ namespace DeviceClient.Simulator
             
             if(_msg.Contains("CONNECT3"))
             {
-                SendImei("123456");
+                SendImei("8683450382151250");
             }
         }
 
@@ -313,20 +317,7 @@ namespace DeviceClient.Simulator
         {
             { (int)ServerPackets.welcome, Welcome },
             { (int)ServerPackets.CONNECT3, Connect3 },
-            { (int)ServerPackets.ReadReceive, ReadReceive },
-            { (int)ServerPackets.playerRotation, PlayerRotation },
-            { (int)ServerPackets.playerDisconnected, PlayerDisconnected },
-            { (int)ServerPackets.playerHealth, PlayerHealth },
-            { (int)ServerPackets.playerRespawned, PlayerRespawned },
-            { (int)ServerPackets.createItemSpawner,CreateItemSpawner },
-            { (int)ServerPackets.itemSpawned, ItemSpawned },
-            { (int)ServerPackets.itemPickedUp, ItemPickedUp },
-            { (int)ServerPackets.spawnProjectile, SpawnProjectile },
-            { (int)ServerPackets.projectilePosition, ProjectilePosition },
-            { (int)ServerPackets.projectileExploded, ProjectileExploded },
-            { (int)ServerPackets.spawnEnemy, SpawnEnemy },
-            { (int)ServerPackets.enemyPosition,EnemyPosition },
-            { (int)ServerPackets.enemyHealth, EnemyHealth },
+            { (int)ServerPackets.docModem, ReadReceive }
         };
             Console.WriteLine("Initialized packets.");
         }
@@ -354,6 +345,10 @@ namespace DeviceClient.Simulator
                 tcp.SendData(_packet);
             }
         }        
+        /// <summary>
+        /// Gởi lên server id, imei 
+        /// </summary>
+        /// <param name="imei"></param>
         public void SendImei(string imei)
         {
             using (Packet _packet = new Packet((int)ClientPackets.docModem))

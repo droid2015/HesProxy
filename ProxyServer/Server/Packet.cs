@@ -20,8 +20,9 @@ namespace ProxyServer.Server
     {
         welcomeReceived = 1,
         connect3,
-        docModem,
+        docModem,        
         ghiModem,
+        traKQModem,
         kichDoc
     }
 

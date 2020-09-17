@@ -9,7 +9,7 @@ namespace DeviceClient.Simulator
     {
         welcome = 1,
         CONNECT3,
-        ReadReceive,
+        docModem,
         playerRotation,
         playerDisconnected,
         playerHealth,
